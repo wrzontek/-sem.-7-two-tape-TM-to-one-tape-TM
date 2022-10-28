@@ -2,14 +2,13 @@
 #include <sstream>
 #include <cstddef>
 #include <cstdlib>
-#include <fstream>
-#include "turing_machine_converter.cpp"
+#include "turing_machine.h"
 
 using namespace std;
 
 static bool verbose = true;
 
-static void print_usage(const string &error) {
+static void print_usage(string error) {
     cerr << "ERROR: " << error << "\n"
          << "Usage: tm_interpreter [-q|--quiet] <input_file> <input>\n";
     exit(1);
@@ -105,45 +104,19 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     TuringMachine tm = read_tm_from_file(f);
-//    tapes.resize(tm.num_tapes);
-//    heads.resize(tm.num_tapes);
-//    tapes[0] = tm.parse_input(input);
-//    if (tapes[0].empty() && input != "") {
-//        cerr << "ERROR: The last argument is not a sequence of input letters\n";
-//        return 1;
-//    }
-//    append_blanks_under_heads();
-//
-//    if (verbose)
-//        print_configuration();
-//    for (;;) {
-//        execute_step(tm);
-//        if (verbose)
-//            print_configuration();
-//        if (state == REJECTING_STATE)
-//            halt(false);
-//        if (state == ACCEPTING_STATE)
-//            halt(true);
-//    }
-
-    TuringMachine one_tape_tm = two_tape_to_one_tape(tm);
-    tapes.resize(one_tape_tm.num_tapes);
-    heads.resize(one_tape_tm.num_tapes);
-    tapes[0] = one_tape_tm.parse_input(input);
+    tapes.resize(tm.num_tapes);
+    heads.resize(tm.num_tapes);
+    tapes[0] = tm.parse_input(input);
     if (tapes[0].empty() && input != "") {
         cerr << "ERROR: The last argument is not a sequence of input letters\n";
         return 1;
     }
     append_blanks_under_heads();
-    std::ofstream file;
-    file.open("converted.tm");
-//    = std::ofstream("converted.tm")
-    one_tape_tm.save_to_file(file);
 
     if (verbose)
         print_configuration();
     for (;;) {
-        execute_step(one_tape_tm);
+        execute_step(tm);
         if (verbose)
             print_configuration();
         if (state == REJECTING_STATE)
@@ -152,5 +125,4 @@ int main(int argc, char *argv[]) {
             halt(true);
     }
 }
-
  

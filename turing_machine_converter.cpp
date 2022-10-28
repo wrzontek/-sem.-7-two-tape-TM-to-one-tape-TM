@@ -3,6 +3,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <algorithm>
 #include "turing_machine.h"
 
 #define BLANK "_"
@@ -20,6 +21,21 @@
 
 using namespace std;
 
+// https://stackoverflow.com/questions/440133/how-do-i-create-a-random-alpha-numeric-string-in-c
+std::string random_bracketized_string(size_t length) {
+    auto randchar = []() -> char {
+        const char charset[] =
+                "0123456789"
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                "abcdefghijklmnopqrstuvwxyz";
+        const size_t max_index = (sizeof(charset) - 1);
+        return charset[rand() % max_index];
+    };
+    std::string str(length, 0);
+    std::generate_n(str.begin(), length, randchar);
+    return "(" + str + ")";
+}
+
 char letter_enrichment[5] = {NOTHING_SPECIAL, IS_HEAD, GO_LEFT, GO_RIGHT, GO_STAY};
 char letter_enrichment_no_mark[4] = {NOTHING_SPECIAL, GO_LEFT, GO_RIGHT, GO_STAY};
 char letter_enrichment_directions[3] = {GO_LEFT, GO_RIGHT, GO_STAY};
@@ -36,8 +52,7 @@ string bracketize(const string &s) {
 
 char dir_to_enrichment(string dir) {
     if (dir.length() != 1) {
-        cerr << "SOMETHING IS WRONG" << endl;
-        exit(1);
+        throw std::runtime_error("dir_to_enrichment called with illegal argument");
     }
     if (dir.at(0) == HEAD_LEFT) {
         return GO_LEFT;
@@ -48,8 +63,7 @@ char dir_to_enrichment(string dir) {
     if (dir.at(0) == HEAD_STAY) {
         return GO_STAY;
     }
-    cerr << "SOMETHING IS WRONG" << endl;
-    exit(1);
+    throw std::runtime_error("dir_to_enrichment called with illegal argument");
 }
 
 string enrichment_to_dir(char enrichment) {
@@ -62,44 +76,59 @@ string enrichment_to_dir(char enrichment) {
     if (enrichment == GO_STAY) {
         return string(1, HEAD_STAY);
     }
-    cerr << "SOMETHING IS WRONG" << endl;
-    exit(1);
+    throw std::runtime_error("enrichment_to_dir called with illegal argument");
 }
+
+string separator = random_bracketized_string(15);
+string HASH = random_bracketized_string(25);
+string create_state_1 = random_bracketized_string(25);
+string create_state_2 = random_bracketized_string(25);
+string create_state_3 = random_bracketized_string(25);
+string return_state = random_bracketized_string(25);
+string return_from_start_1 = random_bracketized_string(25);
+string return_from_start_2 = random_bracketized_string(25);
+string mark_return_state = random_bracketized_string(25);
+string extend_state = random_bracketized_string(25);
+string move_state = random_bracketized_string(25);
+
+// more readable but more likely to collide
+//    string separator = "-";
+//    string HASH = "(HASH)";
+//    string create_state_1 = "(create_state_1)";
+//    string create_state_2 = "(create_state_2)";
+//    string create_state_3 = "(create_state_3)";
+//    string return_state = "(return_state)";
+//    string return_from_start_1 = "(return_from_start_1)";
+//    string return_from_start_2 = "(return_from_start_2)";
+//    string mark_return_state = "(mark_return_state)";
+//    string extend_state = "(extend_state)";
+//    string move_state = "(move_state)";
 
 string enrich(const string &s, char en) {
     return bracketize(bracketize(s) + en);
 }
 
 string merge(const string &a, const string &b) {
-    return bracketize(bracketize(a) + '-' + bracketize(b));
+    return bracketize(bracketize(a) + separator + bracketize(b));
 }
 
 string merge(const string &a, const string &b, const string &c) {
-    return bracketize(bracketize(a) + '-' + bracketize(b) + '-' + bracketize(c));
+    return bracketize(bracketize(a) + separator + bracketize(b) + separator + bracketize(c));
 }
 
 string merge(const string &a, const string &b, const string &c, const string &d) {
-    return bracketize(bracketize(a) + '-' + bracketize(b) + '-' + bracketize(c) + '-' + bracketize(d));
+    return bracketize(
+            bracketize(a) + separator + bracketize(b) + separator + bracketize(c) + separator + bracketize(d));
 }
 
 
 TuringMachine two_tape_to_one_tape(TuringMachine &two_tape_machine) {
-    vector<string> input_alphabet = two_tape_machine.input_alphabet;
+    vector<string> input_alphabet_plus_blank = two_tape_machine.input_alphabet;
+    input_alphabet_plus_blank.emplace_back(BLANK);
     transitions_t transitions;
 
-    string HASH = "(HASH)"; // TODO randomize names until unique
-    string create_state_1 = "(create_state_1)";
-    string create_state_2 = "(create_state_2)";
-    string create_state_3 = "(create_state_3)";
-    string return_state = "(return_state)";
-    string return_from_start_1 = "(return_from_start_1)";
-    string return_from_start_2 = "(return_from_start_2)";
-    string mark_return_state = "(mark_return_state)";
-    string extend_state = "(extend_state)";
-    string move_state = "(move_state)";
-
     // special: start
-    for (const auto &letter: input_alphabet) {
+    for (const auto &letter: input_alphabet_plus_blank) {
         auto letter_before = vec(letter);
         auto letter_after = vec(enrich(letter, IS_HEAD));
 
