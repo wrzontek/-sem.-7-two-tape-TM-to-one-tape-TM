@@ -2,6 +2,7 @@
 #include <sstream>
 #include <cstddef>
 #include <cstdlib>
+#include <fstream>
 #include "turing_machine_converter.cpp"
 
 using namespace std;
@@ -134,18 +135,22 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     append_blanks_under_heads();
-
-    if (verbose)
-        print_configuration();
-    for (;;) {
-        execute_step(one_tape_tm);
-        if (verbose)
-            print_configuration();
-        if (state == REJECTING_STATE)
-            halt(false);
-        if (state == ACCEPTING_STATE)
-            halt(true);
-    }
-
+    std::ofstream file;
+    file.open("converted.tm");
+//    = std::ofstream("converted.tm")
+    one_tape_tm.save_to_file(file);
+//
+//    if (verbose)
+//        print_configuration();
+//    for (;;) {
+//        execute_step(one_tape_tm);
+//        if (verbose)
+//            print_configuration();
+//        if (state == REJECTING_STATE)
+//            halt(false);
+//        if (state == ACCEPTING_STATE)
+//            halt(true);
+//    }
 }
+
  

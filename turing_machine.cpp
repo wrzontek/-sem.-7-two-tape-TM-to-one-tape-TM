@@ -123,8 +123,15 @@ TuringMachine::TuringMachine(int num_tapes_, vector<string> input_alphabet_, tra
                is_identifier(state_after));
         assert(letters_before.size() == (size_t) num_tapes && letters_after.size() == (size_t) num_tapes &&
                directions.length() == (size_t) num_tapes);
-        for (int a = 0; a < num_tapes; ++a)
-            assert(is_identifier(letters_before[a]) && is_identifier(letters_after[a]) && is_direction(directions[a]));
+        for (int a = 0; a < num_tapes; ++a) {
+            if (!(is_identifier(letters_before[a]) && is_identifier(letters_after[a]) && is_direction(directions[a]))) {
+                std::cout << letters_before[a] << std::endl;
+                std::cout << letters_after[a] << std::endl;
+                std::cout << directions[a] << std::endl;
+                std::cout << std::endl;
+                assert(false);
+            }
+        }
     }
 }
 
