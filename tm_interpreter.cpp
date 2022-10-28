@@ -139,18 +139,18 @@ int main(int argc, char *argv[]) {
     file.open("converted.tm");
 //    = std::ofstream("converted.tm")
     one_tape_tm.save_to_file(file);
-//
-//    if (verbose)
-//        print_configuration();
-//    for (;;) {
-//        execute_step(one_tape_tm);
-//        if (verbose)
-//            print_configuration();
-//        if (state == REJECTING_STATE)
-//            halt(false);
-//        if (state == ACCEPTING_STATE)
-//            halt(true);
-//    }
+
+    if (verbose)
+        print_configuration();
+    for (;;) {
+        execute_step(one_tape_tm);
+        if (verbose)
+            print_configuration();
+        if (state == REJECTING_STATE)
+            halt(false);
+        if (state == ACCEPTING_STATE)
+            halt(true);
+    }
 }
 
  

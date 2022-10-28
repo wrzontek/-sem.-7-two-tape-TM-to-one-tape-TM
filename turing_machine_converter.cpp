@@ -1,6 +1,3 @@
-#include <cassert>
-#include <cstddef>
-#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <set>
@@ -26,12 +23,8 @@ using namespace std;
 char letter_enrichment[5] = {NOTHING_SPECIAL, IS_HEAD, GO_LEFT, GO_RIGHT, GO_STAY};
 char letter_enrichment_no_mark[4] = {NOTHING_SPECIAL, GO_LEFT, GO_RIGHT, GO_STAY};
 char letter_enrichment_directions[3] = {GO_LEFT, GO_RIGHT, GO_STAY};
+char letter_enrichment_no_directions[2] = {NOTHING_SPECIAL, IS_HEAD};
 // ((id)1) for example
-
-string mark_with_head(string letter) { // todo czy to nie zmienia oryginału ?
-    letter[letter.size() - 1] = IS_HEAD;
-    return letter;
-}
 
 vector<string> vec(const string &letter) {
     return {1, letter};
@@ -246,7 +239,7 @@ TuringMachine two_tape_to_one_tape(TuringMachine &two_tape_machine) {
             transitions[make_pair(merge(state, letter), vec(HASH))] =
                     make_tuple(merge(move_state, state), vec(enrich(BLANK, GO_STAY)), HEAD_RIGHT);
 
-            for (char enrichment1: letter_enrichment) {
+            for (char enrichment1: letter_enrichment_no_directions) {
                 string on_tape_letter = enrich(letter, enrichment1);
 
                 // 1
@@ -254,7 +247,7 @@ TuringMachine two_tape_to_one_tape(TuringMachine &two_tape_machine) {
                         make_tuple(merge(move_state, state, on_tape_letter), vec(HASH), HEAD_RIGHT);
 
                 for (const auto &letter2: two_tape_machine.working_alphabet()) {
-                    for (char enrichment2: letter_enrichment) {
+                    for (char enrichment2: letter_enrichment_no_directions) {
                         string on_tape_letter2 = enrich(letter2, enrichment2);
 
                         // 2
@@ -332,7 +325,7 @@ TuringMachine two_tape_to_one_tape(TuringMachine &two_tape_machine) {
 
             transitions[make_pair(merge(ACCEPTING_STATE, letter2), vec(letter_on_tape))] =
                     make_tuple(ACCEPTING_STATE, vec(letter_on_tape), HEAD_STAY);
-            
+
             transitions[make_pair(merge(REJECTING_STATE, letter2), vec(letter_on_tape))] =
                     make_tuple(REJECTING_STATE, vec(letter_on_tape), HEAD_STAY);
         }
