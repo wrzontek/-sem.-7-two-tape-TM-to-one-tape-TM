@@ -153,7 +153,7 @@ TuringMachine two_tape_to_one_tape(TuringMachine &two_tape_machine) {
         ///////////////////////////////
 
         transitions[make_pair(create_state_3, letter_before)] = make_tuple(
-                merge(return_from_start_1, INITIAL_STATE, BLANK),// TODO must be unique
+                merge(return_from_start_1, INITIAL_STATE, BLANK),
                 vec(HASH),
                 HEAD_LEFT);
     }
